@@ -13,7 +13,7 @@ def get_connection_string():
     environment_variables_defined = user_name and password and host and database_name
 
     if environment_variables_defined:
-        return f'postgresql://{user_name}@{host}//{database_name}'
+        return f'postgresql://{user_name}:{password}@{host}/{database_name}'
 
     else:
         raise KeyError('Some necessary environment variable(s) are not defined')
@@ -22,7 +22,7 @@ def get_connection_string():
 def open_database():
     try:
         connection_string = get_connection_string()
-        connection = psycopg2.connection(connection_string)
+        connection = psycopg2.connect(connection_string)
         connection.autocommit = True
     except psycopg2.DatabaseError as exception:
         print('Database Connection problem')

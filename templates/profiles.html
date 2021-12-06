@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}Naughty-Nice_list{% endblock %}
+
+{% block content %}
+    <h2>Naughty And Nice Action List</h2>
+    <table>
+        <tr>
+            {% for category in profiles[0].keys %}
+                <th>{{ category}}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for profile in profiles %}
+                {% for categories in profile.values() %}
+                    <td>{{ categories }}</td>
+                {% endfor %}
+            {% endfor %}
+        </tr>
+
+    </table>
+
+{% endblock %}

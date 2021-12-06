@@ -6,9 +6,9 @@ import server
 
 
 @database_common.connection_handler
-def get_people(cursor):
+def get_profiles(cursor):
     query = """
-            SELECT * FROM gift_list;
+            SELECT * FROM profiles;
     """
 
     cursor.execute(query)
