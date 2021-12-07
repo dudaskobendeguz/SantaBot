@@ -1,5 +1,7 @@
 import csv
 
+import database_common
+
 
 def open_csv_file_into_dict(file_path):
     with open(file_path, mode='r') as file:
@@ -25,11 +27,60 @@ def create_profiles_dictionary(profiles_list):
 
     categories = get_categories(profiles_list[0])
 
-    # categories = [category if 'ideal' not in category else category.split(' ', maxsplit=1) for category in profiles_list[0] ]
-    return [{categories[number]: profile_list[number] for number, category in enumerate(categories)} for profile_list in profiles_list]
+    profiles = []
+    for profile in profiles_list[1:]:
+        profile += profile[-1].split(',')
+        profile.pop(2)
+        profiles.append({categories[number]: profile[number] for number, category in enumerate(categories)})
+
+    return profiles
+
+
+def get_karma(karmas_list):
+    action_types = karmas_list[0]
+    karmas = []
+    for karma in karmas_list[1:]:
+        karmas.append({action_types[number]: karma[number] for number, action_type in enumerate(action_types)})
+    return karmas
+
+
+@database_common.connection_handler
+def create_karmas_table(cursor):
+    query = """
+        CREATE TABLE IF NOT EXISTS karmas(
+            id INTEGER PRIMARY KEY,
+            action_type TEXT,
+            action TEXT
+        )
+    """
+    cursor.execute(query)
+
+
+@database_common.connection_handler
+def create_profiles_table(cursor):
+    query = """
+        CREATE TABLE IF NOT EXISTS profiles(
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            actions VARCHAR,
+            ideal TEXT,
+            present_categories TEXT
+        )
+    """
+    cursor.execute(query)
+
+
+def create_database():
+    profiles_data = open_csv_file(file_path='data/profiles.csv')
+    profiles = create_profiles_dictionary(profiles_data)
+    karmas_data = open_csv_file(file_path='data/karma.csv')
+    karmas = get_karma(karmas_data)
+    print(profiles)
+    print(karmas)
+    create_profiles_table()
+    create_karmas_table()
 
 
 if __name__ == "__main__":
-    data = open_csv_file(file_path='data/profiles.csv')
-    profiles = create_profiles_dictionary(data)
-    print(profiles)
+    create_database()
+
